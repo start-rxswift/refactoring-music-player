@@ -11,6 +11,9 @@
 		36922D1922118586007176DA /* MusicPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36922D1822118586007176DA /* MusicPlayerViewController.swift */; };
 		36922D1E22118587007176DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 36922D1D22118587007176DA /* Assets.xcassets */; };
 		36922D2122118587007176DA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 36922D1F22118587007176DA /* LaunchScreen.storyboard */; };
+		36DE74BD23607F6100466684 /* MusicPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DE74BC23607F6100466684 /* MusicPlayerManager.swift */; };
+		36DE74BF2360860000466684 /* MusicPlayerViewController1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DE74BE2360860000466684 /* MusicPlayerViewController1.swift */; };
+		36DE74C12360868800466684 /* MusicPlayerViewModel1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DE74C02360868800466684 /* MusicPlayerViewModel1.swift */; };
 		C77F0D55F14A6587D8365964 /* Pods_MyMusicPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A146C94538B8C378FE228A61 /* Pods_MyMusicPlayer.framework */; };
 /* End PBXBuildFile section */
 
@@ -22,6 +25,9 @@
 		36922D1D22118587007176DA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		36922D2022118587007176DA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		36922D2222118587007176DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		36DE74BC23607F6100466684 /* MusicPlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayerManager.swift; sourceTree = "<group>"; };
+		36DE74BE2360860000466684 /* MusicPlayerViewController1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayerViewController1.swift; sourceTree = "<group>"; };
+		36DE74C02360868800466684 /* MusicPlayerViewModel1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayerViewModel1.swift; sourceTree = "<group>"; };
 		A146C94538B8C378FE228A61 /* Pods_MyMusicPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyMusicPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E59CAE03792C53F4C31B7C17 /* Pods-MyMusicPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyMusicPlayer.release.xcconfig"; path = "Target Support Files/Pods-MyMusicPlayer/Pods-MyMusicPlayer.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -41,6 +47,8 @@
 		36182799235C5016003EDF37 /* Rx+MVVM */ = {
 			isa = PBXGroup;
 			children = (
+				36DE74BE2360860000466684 /* MusicPlayerViewController1.swift */,
+				36DE74C02360868800466684 /* MusicPlayerViewModel1.swift */,
 			);
 			path = "Rx+MVVM";
 			sourceTree = "<group>";
@@ -82,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				36922D1622118586007176DA /* AppDelegate.swift */,
+				36DE74BC23607F6100466684 /* MusicPlayerManager.swift */,
 				361827A5235CD189003EDF37 /* VC */,
 				36922D29221190C3007176DA /* MVC */,
 				3618279A235C502D003EDF37 /* MVVM */,
@@ -240,6 +249,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				36922D1922118586007176DA /* MusicPlayerViewController.swift in Sources */,
+				36DE74BD23607F6100466684 /* MusicPlayerManager.swift in Sources */,
+				36DE74BF2360860000466684 /* MusicPlayerViewController1.swift in Sources */,
+				36DE74C12360868800466684 /* MusicPlayerViewModel1.swift in Sources */,
 				36922D1722118586007176DA /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

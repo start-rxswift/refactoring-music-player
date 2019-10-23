@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         guard let window = window else { return false }
         
-        window.rootViewController = MusicPlayerViewController()
+        window.rootViewController = MusicPlayerViewController1()
         window.makeKeyAndVisible()
         
         return true

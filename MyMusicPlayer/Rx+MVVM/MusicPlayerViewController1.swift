@@ -1,32 +1,31 @@
 //
-//  MusicPlayerViewController.swift
+//  MusicPlayerViewController1.swift
 //  MyMusicPlayer
 //
-//  Created by Jinwoo Kim on 11/02/2019.
+//  Created by Jinwoo Kim on 23/10/2019.
 //  Copyright © 2019 jinuman. All rights reserved.
 //
 
 import UIKit
 //import AVFoundation
 
+import RxSwift
+import RxCocoa
+
 import SnapKit
 
-/**
- 
- 
- */
-class MusicPlayerViewController: UIViewController {  // View ... Action(User Interaction) ...
+class MusicPlayerViewController1: UIViewController {  // View ... Action(User Interaction) ...
 
     // MARK: - Properties
     
     // MARK: UI
     private lazy var guide = view.safeAreaLayoutGuide
     
-    private lazy var playPauseButton: UIButton = {
+    private let playPauseButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setImage(#imageLiteral(resourceName: "button_play"), for: .normal)
         button.setImage(#imageLiteral(resourceName: "button_pause"), for: .selected)
-        button.addTarget(self, action: #selector(handlePlayPause), for: .touchUpInside)
+//        button.addTarget(self, action: #selector(handlePlayPause), for: .touchUpInside)
         return button
     }()
     
@@ -44,25 +43,28 @@ class MusicPlayerViewController: UIViewController {  // View ... Action(User Int
         slider.minimumTrackTintColor = .red
         slider.addTarget(self, action: #selector(handleValueChanged), for: .valueChanged)
         
-        slider.maximumValue =
-            Float(self.playerManager.player.duration)
+        let duration = self.viewModel.duration
+        let currentTime = self.viewModel.currentTime
+        
+        slider.maximumValue = Float(duration)
         slider.minimumValue = 0
-        slider.value = Float(self.playerManager.player.currentTime)
+        slider.value = Float(currentTime)
         
         return slider
     }()
     
     // MARK: General
-//    private lazy var player: AVAudioPlayer = AVAudioPlayer()
-    private lazy var playerManager = MusicPlayerManager.shared
-    private lazy var player = self.playerManager.player
+    private let disposeBag = DisposeBag()
     
-    private var timer: Timer?
+    private var viewModel: MusicPlayerViewModel1
     
     // MARK: - Initializing
-    init() {
+    init(viewModel: MusicPlayerViewModel1 = MusicPlayerViewModel1()) {
+        
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        playerManager.delegate = self
+        
+        self.configure(viewModel: viewModel)
     }
     
     required init?(coder: NSCoder) {
@@ -74,6 +76,37 @@ class MusicPlayerViewController: UIViewController {  // View ... Action(User Int
         super.viewDidLoad()
         
         configureLayout()
+    }
+    
+    // MARK: Binding
+    private func configure(viewModel: MusicPlayerViewModel1) {
+        playPauseButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [unowned self] _ in
+                let state = self.playPauseButton.isSelected
+                self.viewModel.didTapPlayAndPause.onNext(state)
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.isSelectedState
+            .asObservable()
+            .bind(to: playPauseButton.rx.isSelected)
+            .disposed(by: disposeBag)
+        
+        viewModel.isSelectedState
+            .drive(onNext: { [unowned self] isSelected in
+                
+                log.debug("State: \(isSelected)")
+                
+                if isSelected {
+                    self.viewModel.play()
+                    self.makeAndFireTimer()
+                } else {
+                    self.viewModel.pause()
+                    self.invalidateTimer()
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: - Methods
@@ -107,47 +140,46 @@ class MusicPlayerViewController: UIViewController {  // View ... Action(User Int
     
     // MARK: General
     @objc private func handleValueChanged() {
-        updateTimeLabelText(time: TimeInterval(progressSlider.value))
+        updateSubview(with: TimeInterval(progressSlider.value))
         guard progressSlider.isTracking == false else {
             return  // 바를 옮기는 중엔 player 를 유지해서 음원 끊김현상 방지
         }
-        player.currentTime = TimeInterval(progressSlider.value)
+        
+        viewModel.playerManager.player.currentTime = TimeInterval(progressSlider.value)
     }
     
-    @objc private func handlePlayPause() {
-        playPauseButton.isSelected = !playPauseButton.isSelected
-        if playPauseButton.isSelected {
-            player.play()
-            makeAndFireTimer()
-        } else {
-            player.pause()
-            invalidateTimer()
-        }
+    private func updateSubview(with time: TimeInterval) {
+        timeLabel.text = viewModel.updateTimeLabelText(time: time)
     }
+    
+    //    @objc private func handlePlayPause() {
+    //        playPauseButton.isSelected = !playPauseButton.isSelected
+    //
+    //        if playPauseButton.isSelected {
+    //            viewModel.play()
+    //            makeAndFireTimer()
+    //        } else {
+    //            viewModel.pause()
+    //            invalidateTimer()
+    //        }
+    //    }
     
     // MARK: Timer
-    private func updateTimeLabelText(time: TimeInterval) {
-        let minute: Int = Int(time / 60)
-        let second: Int = Int(time.truncatingRemainder(dividingBy: 60))
-        let milisecond: Int = Int(time.truncatingRemainder(dividingBy: 1) * 100)
-        
-        let currentTimeText: String = String(format: "%02ld:%02ld:%02ld", minute, second, milisecond)
-        
-        timeLabel.text = currentTimeText
-    }
-    
+    // FIXME: 고쳐야함
     private func makeAndFireTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true, block: { [weak self] (timer: Timer) in
+        viewModel.timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true, block: { [weak self] (timer: Timer) in
             guard
                 let self = self,
                 self.progressSlider.isTracking == false else {
                     return
             }
             
-            self.updateTimeLabelText(time: self.player.currentTime)
-            self.progressSlider.value = Float(self.player.currentTime)
+            let time = self.viewModel.currentTime
+            self.updateSubview(with: time)
+            self.progressSlider.value = Float(time)
         })
-        guard let timer = timer else {
+        
+        guard let timer = viewModel.timer else {
             print("Timer hasn't created")
             return
         }
@@ -155,7 +187,7 @@ class MusicPlayerViewController: UIViewController {  // View ... Action(User Int
     }
     
     private func invalidateTimer() {
-        guard let timer = timer else {
+        guard let timer = viewModel.timer else {
             print("Timer didn't fired..")
             return
         }
@@ -163,16 +195,11 @@ class MusicPlayerViewController: UIViewController {  // View ... Action(User Int
     }
 }
 
-extension MusicPlayerViewController: MusicPlayerManagerDelegate {
+extension MusicPlayerViewController1: MusicPlayerManagerDelegate {
     func didFinishPlaying() {
         playPauseButton.isSelected = false
-        
         invalidateTimer()
-        
         progressSlider.value = 0
-        
-        updateTimeLabelText(time: 0)
+        updateSubview(with: 0)
     }
-    
-    
 }
